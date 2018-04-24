@@ -1,0 +1,88 @@
+<body>
+    A: <input type="text" id="value_a" value="1" onchange="update()"><br>
+    B: <input type="text" id="value_b" value="1" onchange="update()"><br>
+    C: <input type="text" id="value_c" value="1" onchange="update()"><br>
+    CC: <input type="text" id="value_cc" value="1" onchange="update()"><br>
+    수면: <input type="text" id="value_1" value="1" onchange="update()"><br>
+    식사: <input type="text" id="value_3" value="1" onchange="update()"><br>
+    자세: <input type="text" id="value_5" value="1" onchange="update()"><br>
+    질병: <input type="text" id="value_7" value="1" onchange="update()"><br>
+    기분: <input type="text" id="value_2" value="1" onchange="update()"><br>
+    외로움: <input type="text" id="value_4" value="1" onchange="update()"><br>
+    외모: <input type="text" id="value_6" value="1" onchange="update()"><br>
+    휴식: <input type="text" id="value_8" value="1" onchange="update()"><br>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+    let svgContainer = d3.select("body").append("svg")
+                                        .attr("width", 1000).attr("height", 1000)
+                                        .attr("style", "border:1px solid")
+
+
+    let cc_gray = "rgb(226, 231, 237)",
+        cc_yellow = "rgb(248, 223, 138)",
+        cc_red = "rgb(255, 171, 171)"
+    let mk_blue = "rgb(139, 184, 225)",
+        mk_white = "rgb(222, 235, 247)",
+        mk_red = cc_red
+
+
+    let draw_circle = (cx, cy, r, color) => {
+        svgContainer.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r).attr("fill", color)
+    }
+
+    let draw_rect = (x, y, w, h, color) => {
+        svgContainer.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", color)
+    }
+    
+    function update(){
+        d3.selectAll("rect").remove()
+        a = $("#value_a").val()
+        b = $("#value_b").val()
+        c = $("#value_c").val()
+
+        let sum = a + b + c
+        a /= sum
+        b /= sum
+        c /= sum
+
+        let x = -1, y = -1, max_length = 200
+        if(a < c){
+            y = max_length
+            x = y * Math.sqrt((a+b)/(b+c))
+        }
+        else{
+            x = max_length
+            y = x * Math.sqrt((b+c)/(a+b))
+        }
+
+        let d = Math.sqrt(b*x*x/(a+b))
+
+        let total_x = x + y - d
+        
+        draw_rect(100+(400-total_x)/2, 100, x, x, "rgb(231,231,231)")
+        cc = $("#value_cc").val()
+        let cc_color = cc_gray
+        if(cc == 0) cc_color = cc_red
+        else if(cc == 2) cc_color = cc_yellow
+        draw_rect(100+(400-total_x)/2+x-d, 100+x-d, y, y, cc_color)
+        draw_rect(100+(400-total_x)/2+x-d, 100+x-d, d, d, "rgb(85,135,162)")
+
+        let bottom = 100 + total_x
+
+        for(let i=1;i<=8;i++){
+            mk_value = $("#value_" + i).val()
+            mk_color = mk_white
+            if(mk_value == 0) mk_color = mk_red
+            else if(mk_value == 2) mk_color = mk_blue
+            draw_rect(50+50*i, bottom+50+50*(1-i%2), 50, 50, mk_color)
+        }
+
+        //draw_rect(100, 600, 400, 50, "black")
+    }
+
+    update()
+
+</script>
